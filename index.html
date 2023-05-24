@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Cifrario di Delta</title>
+  <style>
+    body {
+      text-align: center;
+      font-family: Arial, sans-serif;
+    }
+
+    h1 {
+      color: #333;
+    }
+
+    textarea {
+      width: 300px;
+      height: 100px;
+      margin-bottom: 10px;
+    }
+
+    button {
+      padding: 5px 10px;
+      background-color: #333;
+      color: #fff;
+      border: none;
+      cursor: pointer;
+    }
+    
+    
+    
+    @keyframes scramble {
+      0% {
+        content: "9029";
+      }
+      20% {
+        content: "%#*#";
+      }
+      40% {
+        content: "6#*#";
+      }
+      60% {
+        content: "9&##";
+      }
+      80% {
+        content: "90$&";
+      }
+      100% {
+        content: "9029";
+      }
+    }
+    
+    h1 {
+      color: #333;
+      font-size: 2em;
+      animation: scramble 10s infinite;
+    }
+  </style>
+</head>
+<body>
+  <h1>9029</h1>
+  <input type="file" id="fileInput" accept=".json" onchange="loadCifrario(event)">
+  <br> <br>
+  <textarea id="message" placeholder="Inserisci il messaggio da cifrare"></textarea> <br> 
+  <button onclick="encrypt()">Cifra</button> <br> <br>
+  <textarea id="encryptedMessage" placeholder="Messaggio cifrato"></textarea> <br>
+  <button onclick="decrypt()">Decifra</button> <br> <br>
+  <textarea id="decryptedMessage" placeholder="Messaggio decifrato" readonly></textarea> <br>
+
+  <script>
+    // Matrice di luci (sarà caricata dal file JSON selezionato)
+    let lightMatrix = {};
+
+    // Funzione per caricare il cifrario da un file JSON
+    function loadCifrario(event) {
+      const file = event.target.files[0];
+      const reader = new FileReader();
+
+      reader.onload = function(e) {
+        const content = e.target.result;
+        try {
+          lightMatrix = JSON.parse(content);
+        } catch (error) {
+          console.error('Errore durante il parsing del file JSON:', error);
+        }
+      };
+
+      reader.readAsText(file);
+    }
+
+    // Funzione per cifrare il messaggio
+    function encrypt() {
+      const message = document.getElementById('message').value.toUpperCase();
+      let encryptedMessage = '';
+
+      for (let i = 0; i < message.length; i++) {
+        const character = message[i];
+        if (lightMatrix.hasOwnProperty(character)) {
+          encryptedMessage += lightMatrix[character] + ' ';
+        }
+      }
+
+      document.getElementById('encryptedMessage').value = encryptedMessage.trim();
+    }
+
+    // Funzione per decifrare il messaggio
+    function decrypt() {
+      const encryptedMessage = document.getElementById('encryptedMessage').value;
+      let decryptedMessage = '';
+
+      const sequences = encryptedMessage.split(' ');
+      for (let i = 0; i < sequences.length; i++) {
+        const sequence = sequences[i];
+        const characters = Object.keys(lightMatrix).filter(key => lightMatrix[key] === sequence);
+        if (characters.length > 0) {
+          decryptedMessage += characters[0];
+        }
+      }
+
+      document.getElementById('decryptedMessage').value = decryptedMessage.toLowerCase();
+    }
+  </script>
+</body>
+</html>
