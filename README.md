@@ -1,2 +1,2 @@
 # chipher
-A site for simple cryptography
+A website for simple caesar-like cryptography
